@@ -3,9 +3,9 @@ mongoose.Promise = global.Promise;
 const modelName = "users"
 
 const schemaModel = new mongoose.Schema ({
-    nome: String,
+    name: String,
     email: String,
-    senha: String,
+    password: String,
 });
 
 if(mongoose.connection && mongoose.connection.models[modelName]){
