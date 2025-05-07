@@ -1,8 +1,55 @@
 const UserModel = require("../models/UserModel");
+const { validationResult, matchedData } = require("express-validator");
+const bcrypt = require("bcrypt")
 
 module.exports = {
+
+    //busca todos os usuários cadastrados
     getUsers: async (req, res) => {
         let users = await UserModel.find();
         res.json({ users });
     },
+
+    //Adiciona um novo usuário
+    addUser: async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+        res.json({
+            error: errors.mapped(),
+        });
+        return;
+        }
+    
+        const data = matchedData(req);
+        let dataAdd = {};
+
+        if (data.name) {
+            dataAdd.name = data.name;
+        }
+        if (data.email) {
+            const emailCheck = await UserModel.findOne({ email: data.email });
+            if (emailCheck) {
+                res.json({ error: "Email já cadastrado" });
+                return;
+            }
+            dataAdd.email = data.email;
+        }
+    
+        if (data.password) {
+            dataAdd.password = await bcrypt.hash(data.password, 10);
+        }
+
+        const newUser = new UserModel(dataAdd);
+
+        const operationAdd = await newUser.save();
+        //const operation = await UserModel.findByIdAndUpdate( { _id: data.id},  { $set: dataUpdates })
+    
+        if (!operationAdd) {
+            res.json({ error: "Cadastro não realizado!" });
+            return;
+        }
+        res.json({ sucess: true });
+    },
+
+    
 }
