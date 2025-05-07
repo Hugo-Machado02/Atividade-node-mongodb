@@ -51,7 +51,7 @@ module.exports = {
         res.json({ sucess: true });
     },
 
-    //Edita um novo usuário
+    //Edita um usuário
     editUser: async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -85,6 +85,25 @@ module.exports = {
         }
 
         const operation = await UserModel.findByIdAndUpdate( { _id: data.id},  { $set: dataUpdates })
+        if (!operation) {
+            res.json({ error: "ID não encontrado!" });
+            return;
+        }
+        res.json({ sucess: true });
+    },
+
+    //Exclui um usuário
+    deleteUser: async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+        res.json({
+            error: errors.mapped(),
+        });
+        return;
+        }
+    
+        const data = matchedData(req);
+        const operation = await UserModel.findByIdAndDelete(data.id)
         if (!operation) {
             res.json({ error: "ID não encontrado!" });
             return;
