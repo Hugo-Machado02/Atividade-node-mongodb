@@ -6,8 +6,9 @@ const schemaModel = new mongoose.Schema ({
     name: String,
     email: String,
     password: String,
-});
-
+},
+{ versionKey: false }
+);
 if(mongoose.connection && mongoose.connection.models[modelName]){
     module.exports = mongoose.connection.models[modelName];
 } else{
