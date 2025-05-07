@@ -51,5 +51,44 @@ module.exports = {
         res.json({ sucess: true });
     },
 
+    //Edita um novo usuário
+    editUser: async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+        res.json({
+            error: errors.mapped(),
+        });
+        return;
+        }
     
+        const data = matchedData(req);
+        let dataUpdates = {};
+    
+        if (!data.id) {
+            res.json({ error: "ID vazio" });
+            console.log(data.id)
+            return;
+        }
+        if (data.name) {
+            dataUpdates.name = data.name;
+        }
+        if (data.email) {
+            const emailCheck = await UserModel.findOne({ email: data.email });
+            if (emailCheck) {
+                res.json({ error: "Email já cadastrado" });
+                return;
+            }
+            dataUpdates.email = data.email;
+        }
+        if (data.password) {
+            dataUpdates.password = await bcrypt.hash(data.password, 10);
+        }
+
+        const operation = await UserModel.findByIdAndUpdate( { _id: data.id},  { $set: dataUpdates })
+        if (!operation) {
+            res.json({ error: "ID não encontrado!" });
+            return;
+        }
+        res.json({ sucess: true });
+    },
 }
