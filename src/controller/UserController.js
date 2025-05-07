@@ -64,11 +64,6 @@ module.exports = {
         const data = matchedData(req);
         let dataUpdates = {};
     
-        if (!data.id) {
-            res.json({ error: "ID vazio" });
-            console.log(data.id)
-            return;
-        }
         if (data.name) {
             dataUpdates.name = data.name;
         }
@@ -86,7 +81,7 @@ module.exports = {
 
         const operation = await UserModel.findByIdAndUpdate( { _id: data.id},  { $set: dataUpdates })
         if (!operation) {
-            res.json({ error: "ID não encontrado!" });
+            res.json({ error: "Usuário não encontrado!" });
             return;
         }
         res.json({ sucess: true });
@@ -105,7 +100,7 @@ module.exports = {
         const data = matchedData(req);
         const operation = await UserModel.findByIdAndDelete(data.id)
         if (!operation) {
-            res.json({ error: "ID não encontrado!" });
+            res.json({ error: "Usuário não encontrado!" });
             return;
         }
         res.json({ sucess: true });
