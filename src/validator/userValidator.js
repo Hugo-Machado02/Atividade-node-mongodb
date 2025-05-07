@@ -45,3 +45,10 @@ module.exports = {
             errorMessage: "A senha deve ter no mínimo 10 caracteres",
         },
   }),
+    deleteUser: checkSchema({
+        id: {
+            notEmpty: true,
+            errorMessage: "O ID não pode ser vazio",
+        },
+  }),
+};
