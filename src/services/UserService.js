@@ -32,7 +32,7 @@ class UserService {
         let dataUpdate = {};
 
         if(data.id){
-            const validaIdUser = await UserRepository.idUserValid(data.id)
+            const validaIdUser = await UserRepository.validaId(data.id)
             if(!validaIdUser){
                 return { error: "ID do usuário inválido!" };
             }
@@ -69,7 +69,7 @@ class UserService {
 
     async deleteUser(id){
         if(id){
-            const validaIdUser = await UserRepository.idUserValid(id)
+            const validaIdUser = await UserRepository.validaId(id)
             if(!validaIdUser){
                 return { error: "ID do usuário inválido!" };
             }
