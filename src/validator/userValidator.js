@@ -24,21 +24,23 @@ module.exports = {
     editUser: checkSchema({
         id: {
             notEmpty: true,
-            errorMessage: "O ID não pode ser vazio",
+            errorMessage: "Id do Usuário não especificado!",
         },
         name: {
-            notEmpty: true,
+            optional: { options: { nullable: true } },
             isLength: {
                 options: { min: 3 },
+                errorMessage: "O mínimo para os nomes são de 3 caracteres",
             },
-            errorMessage: "O mínimo para os nomes são de 3 caracteres",
         },
         email: {
+            optional: { options: { nullable: true } },
             isEmail: true,
             normalizeEmail: true,
             errorMessage: "email digitado invalido",
         },
         password: {
+            optional: { options: { nullable: true } },
             isLength: {
                 options: { min: 10 },
             },
@@ -48,7 +50,7 @@ module.exports = {
     deleteUser: checkSchema({
         id: {
             notEmpty: true,
-            errorMessage: "O ID não pode ser vazio",
+            errorMessage: "Id do Usuário não especificado!",
         },
   }),
 };
