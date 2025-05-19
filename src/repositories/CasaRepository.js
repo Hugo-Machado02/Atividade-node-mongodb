@@ -23,7 +23,7 @@ class CasaRepository {
         return await CasaModel.findByIdAndDelete(id)
     }
 
-    async idUserValid(id) {
+    async validaId(id) {
         return mongoose.Types.ObjectId.isValid(id);
     }
 }
