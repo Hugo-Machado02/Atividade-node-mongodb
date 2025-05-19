@@ -1,108 +1,75 @@
-const UserModel = require("../models/UserModel");
+const UserRepository = require("../repositories/UserRepository");
+const UserService = require("../services/UserService");
 const { validationResult, matchedData } = require("express-validator");
-const bcrypt = require("bcrypt")
+
 
 module.exports = {
-
     //busca todos os usuários cadastrados
-    getUsers: async (req, res) => {
-        let users = await UserModel.find();
-        res.json({ users });
+    getAllUsers: async (req, res) => {
+        const users = await UserService.getAllUsers();
+        if (users) {
+            return res.status(200).json({ users });
+        } else {
+            return res.status(500).json("Usuários não encontrados");
+        }
     },
 
     //Adiciona um novo usuário
     addUser: async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-        res.json({
-            error: errors.mapped(),
-        });
-        return;
+            res.json({
+                error: errors.mapped(),
+            });
+            return;
         }
     
         const data = matchedData(req);
-        let dataAdd = {};
 
-        if (data.name) {
-            dataAdd.name = data.name;
+        const newUser = await UserService.addUser(data);
+        if (newUser.sucess) {
+            res.status(200).json({ newUser });
         }
-        if (data.email) {
-            const emailCheck = await UserModel.findOne({ email: data.email });
-            if (emailCheck) {
-                res.json({ error: "Email já cadastrado" });
-                return;
-            }
-            dataAdd.email = data.email;
+        else{
+            res.status(500).json({newUser});
         }
-    
-        if (data.password) {
-            dataAdd.password = await bcrypt.hash(data.password, 10);
-        }
-
-        const newUser = new UserModel(dataAdd);
-
-        const operationAdd = await newUser.save();
-        //const operation = await UserModel.findByIdAndUpdate( { _id: data.id},  { $set: dataUpdates })
-    
-        if (!operationAdd) {
-            res.json({ error: "Cadastro não realizado!" });
-            return;
-        }
-        res.json({ sucess: true });
     },
 
     //Edita um usuário
     editUser: async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-        res.json({
-            error: errors.mapped(),
-        });
-        return;
-        }
-    
-        const data = matchedData(req);
-        let dataUpdates = {};
-    
-        if (data.name) {
-            dataUpdates.name = data.name;
-        }
-        if (data.email) {
-            const emailCheck = await UserModel.findOne({ email: data.email });
-            if (emailCheck) {
-                res.json({ error: "Email já cadastrado" });
-                return;
-            }
-            dataUpdates.email = data.email;
-        }
-        if (data.password) {
-            dataUpdates.password = await bcrypt.hash(data.password, 10);
-        }
-
-        const operation = await UserModel.findByIdAndUpdate( { _id: data.id},  { $set: dataUpdates })
-        if (!operation) {
-            res.json({ error: "Usuário não encontrado!" });
+            res.json({ error: errors.mapped() });
             return;
         }
-        res.json({ sucess: true });
+
+        const data = matchedData(req);
+    
+        const editUser = await UserService.updateUser(data)
+        if (editUser.sucess) {
+            return res.status(200).json({ editUser });
+        }
+        else{
+            return res.status(500).json({ editUser });
+        }
     },
 
     //Exclui um usuário
     deleteUser: async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-        res.json({
-            error: errors.mapped(),
-        });
-        return;
-        }
-    
-        const data = matchedData(req);
-        const operation = await UserModel.findByIdAndDelete(data.id)
-        if (!operation) {
-            res.json({ error: "Usuário não encontrado!" });
+            res.json({ error: errors.mapped() });
             return;
         }
-        res.json({ sucess: true });
+    
+        const { id } = matchedData(req);
+
+        const deleteUser = await UserService.deleteUser(id);
+        if (deleteUser.sucess) {
+            return res.status(200).json({ deleteUser });
+        }
+        else{
+            return res.status(500).json({ deleteUser });
+        }
     },
 }
