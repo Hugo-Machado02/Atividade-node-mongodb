@@ -27,7 +27,7 @@ class UserRepository {
         return await UserModel.findByIdAndDelete(id)
     }
 
-    async idUserValid(id) {
+    async validaId(id) {
         return mongoose.Types.ObjectId.isValid(id);
     }
 }
